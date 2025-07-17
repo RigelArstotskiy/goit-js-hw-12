@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
+  base: '/gois-js-hw-11/',
   root: './src',
   build: {
     outDir: '../dist',
