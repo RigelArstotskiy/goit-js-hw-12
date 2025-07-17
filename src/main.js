@@ -1,24 +1,61 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+import { getImagesByQuery } from './js/pixabay-api.js';
+import { 
+  createGallery, 
+  clearGallery, 
+  showLoader, 
+  hideLoader,
+  initLightbox
+} from './js/render-functions.js';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+initLightbox();
 
-setupCounter(document.querySelector('#counter'))
+const form = document.querySelector('.form');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const searchInput = form.querySelector('input[name="search-text"]');
+    const searchQuery = searchInput.value.trim();
+
+    if (searchQuery === '') {
+        iziToast.error({
+            title: 'Error',
+            message: 'Please enter a search query',
+            position: 'topRight',
+        })
+        return;
+    }
+
+    clearGallery();
+
+    showLoader();
+
+    try {
+        const data = await getImagesByQuery(searchQuery);
+
+        if (!data.hits || data.hits.length === 0) {
+            iziToast.info({
+                title: 'Info',
+                message: 'Sorry, there are no images matching your search query. Please try again!',
+                position: 'topRight'
+            });
+            return;
+        }
+
+        createGallery(data.hits);
+    
+    } catch (error){
+        console.error('Error:', error);
+        iziToast.error({
+            title: 'Error',
+            message: 'Failed to fetch images. Please try again later',
+            position: 'topRight'
+        });
+    } finally {
+        hideLoader();
+    
+        searchInput.value = '';
+    }
+});
