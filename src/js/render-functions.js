@@ -2,6 +2,9 @@ import SimpleLightbox from 'simplelightbox';
 import "simplelightbox/dist/simple-lightbox.min.css"
 
 const galleryContainer = document.querySelector('.gallery');
+const loaderContainer = document.querySelector('.loader-container');
+const loadMoreBtn = document.querySelector('.load-more');
+
 let lightbox = null;
 
 function initLightbox() {
@@ -17,9 +20,7 @@ function initLightbox() {
 }
 
 export function createGallery(images) {
-  const galleryHTML = images
-  .map(image => 
-  `
+  const markup = images.map(image => `
     <li class="gallery-item">
       <a href="${image.largeImageURL}" class="gallery-link">
         <img 
@@ -36,15 +37,14 @@ export function createGallery(images) {
         </div>
       </a>
     </li>
-  `)
-  .join('');
+  `).join('');
 
-  galleryContainer.insertAdjacentHTML('beforeend', galleryHTML);
+  galleryContainer.insertAdjacentHTML('beforeend', markup);
 
-  if (lightbox) {
-    lightbox.refresh();
-  } else {
+  if (!lightbox) {
     initLightbox();
+  } else {
+    lightbox.refresh();
   }
 }
 
@@ -58,17 +58,17 @@ export function clearGallery() {
 }
 
 export function showLoader() {
-  const loaderContainer = document.querySelector('.loader-container');
   loaderContainer.classList.add('visible');
-
-  const form = document.querySelector('.form');
-  form.querySelector('button').disabled = true;
 }
 
 export function hideLoader() {
-  const loaderContainer = document.querySelector('.loader-container');
   loaderContainer.classList.remove('visible');
+}
 
-  const form = document.querySelector('.form');
-  form.querySelector('button').disabled = false;
+export function showLoadMoreButton() {
+  loadMoreBtn.classList.remove('hidden');
+}
+
+export function hideLoadMoreButton() {
+  loadMoreBtn.classList.add('hidden');
 }
