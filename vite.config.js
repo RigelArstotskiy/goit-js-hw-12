@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
-  base: '/goit-js-hw-11/',
+  base: '/goit-js-hw-12/',
   root: './src',
   build: {
     outDir: '../dist',
